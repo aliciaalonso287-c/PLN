@@ -1,3 +1,12 @@
-All_Beauty.jsonl
-Amazon_Fashion.jsonl
-Digital_Music.jsonl
+# Carpetas de datos y corpus pesados
+datos/
+corpus_amazon/
+
+# Entornos virtuales de Python
+.venv/
+venv/
+env/
+
+# Archivos de caché y Python
+__pycache__/
+*.pyc
