@@ -60,20 +60,74 @@ class AmazonCorpusReader(CategorizedCorpusReader, CorpusReader):
         parrafos = []
         for fileid in fileids:
             texto = self.text(fileid)
-            parrafos.extend(texto.split("\n\n"))
+            parrafos.extend(texto.split("\n"))
 
         return parrafos
+    
+    def estadisticas_corpus(reader):
+        # ficheros
+        ficheros = reader.fileids()
+        print("TOTAL DE FICHEROS:", len(ficheros))
+        print("PRIMEROS FICHEROS:", ficheros[:5])
+
+        # categorías del corpus
+        categorias = reader.categories()
+        print("\nCATEGORÍAS:", categorias)
+
+        # ficheros de cada categoría
+        for categoria in categorias:
+            ficheros_categoria = reader.fileids(categories=categoria)
+            print(f"\nFICHEROS DE {categoria.upper()}:",
+                len(ficheros_categoria))
+  
+        # Estadísticas generales del corpus
+        documentos = [reader.leer_documento(f) for f in ficheros]
+
+        total = len(documentos)
+        con_rating = sum(1 for d in documentos if d.get("rating") is not None)
+        
+        con_texto = sum(1 for d in documentos if d.get("text") and d["text"].strip())
+        
+        con_rating_texto = sum(
+            1 for d in documentos
+            if d.get("rating") is not None
+            and d.get("text") and d["text"].strip()
+        )
+
+        distribucion = {}
+        for d in documentos:
+            rating = d.get("rating")
+            if rating is not None:
+                distribucion[rating] = distribucion.get(rating, 0) + 1
+
+        # Comprobar los nombres reales de estos campos en los JSON
+        productos = {
+            d.get("asin") for d in documentos
+            if d.get("asin") is not None
+        }
+        usuarios = {
+            d.get("user_id") for d in documentos
+            if d.get("user_id") is not None
+        }
+
+        print("\n" + "=" * 45)
+        print("ESTADÍSTICAS DEL CORPUS")
+        print("=" * 45)
+        print("Número de reseñas:", total)
+        print("Reseñas con rating:", con_rating)
+        print("Reseñas con texto:", con_texto)
+        print("Reseñas con rating y texto:", con_rating_texto)
+        print("Número de productos únicos:", len(productos))
+        print("Número de usuarios únicos:", len(usuarios))
+
+        print("\nDistribución de ratings:")
+        for rating in sorted(distribucion):
+            print(f"  {rating} estrellas: {distribucion[rating]}")
+
 
 
 if __name__ == "__main__":
     reader = AmazonCorpusReader(root=ruta_corpus)
-
-    primer_archivo = reader.fileids()[3214]
-
-    print("ARCHIVO:", primer_archivo)
-    print("DOCUMENTO:", reader.leer_documento(primer_archivo))
-    print("RATING:", reader.rating(primer_archivo))
-    print("TEXTO:", reader.text(primer_archivo))
-    print("PALABRAS:", reader.words(primer_archivo))
-    print("ORACIONES:", reader.sents(primer_archivo))
-    print("PÁRRAFOS:", reader.paras(primer_archivo))
+    reader.estadisticas_corpus()
+    
+ 

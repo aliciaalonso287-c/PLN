@@ -44,7 +44,7 @@ class AmazonCorpusReader(CategorizedCorpusReader, CorpusReader):
                 
         # eliminamos emojis y caracteres no deseados / símbolos especiales (conservando letras, números, signos y puntuación estándar)
         # dejando caracteres unicode alfanuméricos y puntuación
-        texto = re.sub(r"[^\w\s.,!?:;\-\'\"áéíóúÁÉÍÓÚñÑüÜ]", "", texto, flags=re.UNICODE)
+        texto = re.sub(r"[^\w\s.,!?:;\-\'\"]", "", texto)
         
         # para reducir caracteres repetidos de forma consecutiva
         texto = re.sub(r"(.)\1{2,}", r"\1\1", texto)  
@@ -130,8 +130,8 @@ class AmazonCorpusReader(CategorizedCorpusReader, CorpusReader):
             # vocabulario de palabras en minúsculas
             vocabulario.update(palabra.lower() for palabra in palabras if palabra.isalnum())
 
-            # convertir bytes a Megabytes para mejor lectura
-            tamano_mb = tamano_bytes / (1024 * 1024)
+        # convertir bytes a Megabytes para mejor lectura
+        tamano_mb = tamano_bytes / (1024 * 1024)
             
         print("\nDESCRIPCIÓN DEL CORPUS")
         print(f"Número de documentos:  {len(documentos)}")
